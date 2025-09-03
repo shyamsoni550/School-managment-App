@@ -20,7 +20,7 @@ function useDebounce(value, delay) {
 }
 
 async function fetchSchools(filters = {}) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
     const queryParams = new URLSearchParams();
 
     // Clean and add search parameter
