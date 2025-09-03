@@ -18,9 +18,33 @@ export async function GET(request) {
             values: [],
         });
 
+        const { searchParams } = new URL(request.url);
+        const search = searchParams.get('search') || '';
+        const cities = searchParams.getAll('city[]');
+
+        let baseQuery = "SELECT id, name, address, city, image FROM schools";
+        let conditions = [];
+        let values = [];
+
+        if (search) {
+            conditions.push("(name LIKE ? OR address LIKE ? OR city LIKE ?)");
+            const searchPattern = `%${search}%`;
+            values.push(searchPattern, searchPattern, searchPattern);
+        }
+
+        if (cities.length > 0) {
+            const cityPlaceholders = cities.map(() => "?").join(",");
+            conditions.push(`city IN (${cityPlaceholders})`);
+            values.push(...cities);
+        }
+
+        if (conditions.length > 0) {
+            baseQuery += " WHERE " + conditions.join(" AND ");
+        }
+
         const schools = await query({
-            query: "SELECT id, name, address, city, image FROM schools",
-            values: [],
+            query: baseQuery,
+            values: values,
         });
 
         return NextResponse.json({ schools: schools });
