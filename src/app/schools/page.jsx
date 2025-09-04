@@ -20,7 +20,6 @@ function useDebounce(value, delay) {
 }
 
 async function fetchSchools(filters = {}) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
     const queryParams = new URLSearchParams();
 
     // Clean and add search parameter
@@ -33,7 +32,7 @@ async function fetchSchools(filters = {}) {
         filters.city.forEach(city => queryParams.append('city[]', city));
     }
 
-    const res = await fetch(`${baseUrl}/api/get-schools?${queryParams.toString()}`, {
+    const res = await fetch(`/api/get-schools?${queryParams.toString()}`, {
         cache: 'no-store',
         headers: {
             'Content-Type': 'application/json',
