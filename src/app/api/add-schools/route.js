@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import path from "path";
+import { mkdir } from "fs/promises";
 
 export async function POST(request) {
     try {
@@ -35,12 +36,12 @@ export async function POST(request) {
 
         const filename = Date.now() + "_" + imageFile.name.replaceAll(" ", "_");
         const imagePath = path.join("schoolimage", filename);
+        const fullPath = path.join(process.cwd(), "public/" + imagePath);
 
         try {
-            await writeFile(
-                path.join(process.cwd(), "public/" + imagePath),
-                buffer
-            );
+            // Ensure the directory exists
+            await mkdir(path.dirname(fullPath), { recursive: true });
+            await writeFile(fullPath, buffer);
         } catch (error) {
             console.error("Error saving image file:", error);
             return NextResponse.json({ error: "Failed to save image file." }, { status: 500 });
