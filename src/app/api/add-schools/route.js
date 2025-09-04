@@ -26,24 +26,22 @@ export async function POST(request) {
             return NextResponse.json({ error: "Image file is required." }, { status: 400 });
         }
 
-        let buffer;
-        try {
-            buffer = Buffer.from(await imageFile.arrayBuffer());
-        } catch (error) {
-            console.error("Error processing image file:", error);
-            return NextResponse.json({ error: "Invalid image file." }, { status: 400 });
-        }
-
+        // Process image file
         const filename = Date.now() + "_" + imageFile.name.replaceAll(" ", "_");
         const imagePath = path.join("schoolimage", filename);
         const fullPath = path.join(process.cwd(), "public/" + imagePath);
+        const buffer = Buffer.from(await imageFile.arrayBuffer());
 
         try {
             // Ensure the directory exists
             await mkdir(path.dirname(fullPath), { recursive: true });
+            console.log(`Directory created: ${path.dirname(fullPath)}`);
             await writeFile(fullPath, buffer);
+            console.log(`Image file saved: ${fullPath}`);
         } catch (error) {
             console.error("Error saving image file:", error);
+            console.error(`fullPath: ${fullPath}`);
+            console.error(`buffer: ${buffer.byteLength} bytes`);
             return NextResponse.json({ error: "Failed to save image file." }, { status: 500 });
         }
 
